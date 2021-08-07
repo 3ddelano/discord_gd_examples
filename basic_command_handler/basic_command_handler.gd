@@ -52,7 +52,6 @@ func _on_DiscordBot_message_create(bot: DiscordBot, message: Message, channel: D
 	# The second is the command arguments (args)
 
 	# First we get the remaining string without the prefix
-	message.print()
 	var raw_content = message.content.lstrip(PREFIX)
 
 	var tokens = generate_tokens(raw_content)
