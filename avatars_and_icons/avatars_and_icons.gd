@@ -1,17 +1,15 @@
 extends Control
 
 """
-Bot which reponds only to messages
-with start with a certain prefix.
-The bot has a two commands: gd.ping and gd.say
+Bot which displays the user's avatar
+and guild icon.
+The bot has a a single command: gd.image
 """
 
-# The prefix which all the received messages should start with,
-# in order for the bot to respond to them.
 var PREFIX = "gd."
 
 func _ready():
-	print("Basic Command Handler Bot")
+	print("Avatars And Icons Bot")
 	var bot = $DiscordBot
 	bot.TOKEN = "YOUR_TOKEN_HERE"
 	assert(bot.TOKEN != "YOUR_TOKEN_HERE", "You need to set a valid TOKEN for the bot.")
@@ -48,25 +46,11 @@ func _on_DiscordBot_message_create(bot: DiscordBot, message: Message, channel: D
 	if not message.content.begins_with(PREFIX):
 		return
 
-	# Now we need to convert the rest of the message content
-	# into two parts:
-	# The first is a command name (cmd)
-	# The second is the command arguments (args)
-
-	# First we get the remaining string without the prefix
 	var raw_content = message.content.lstrip(PREFIX)
-
 	var tokens = generate_tokens(raw_content)
-
-	# Now we get the command name from the tokens, and convert it to lowercase
 	var cmd = tokens[0].to_lower()
-
 	tokens.remove(0) # Remove the command name from the tokens
-
-	# Now we get the Array of arguments for that command
 	var args = tokens
-
-	 # Note: We pass the bot, message and channel too
 	handle_command(bot, message, channel, cmd, args)
 
 
@@ -87,28 +71,43 @@ func generate_tokens(raw_content: String):
 
 func handle_command(bot: DiscordBot, message: Message, channel: Dictionary, cmd: String, args: Array):
 	match cmd:
-		"ping":
-			# The ping command will send the latency of the bot
-			# Example Usage: gd.ping
+		"image":
+			print("Sending avatar now")
+			# Getting the raw bytes of the avatar of the user
+			# Make sure to use yield so we wait till the avatar is fetched
+			var avatar_bytes = yield(message.author.get_display_avatar({"size": 128}), "completed")
+			# Now we send the file
+			bot.reply(message, "Your avatar is", {
+				"files": [
+					{
+						"name": "avatar.png",
+						"media_type": "image/png",
+						"data": avatar_bytes
+					}
+				]
+			})
 
-			var starttime = OS.get_ticks_msec() # Get the current epoch
+			# Getting the raw bytes of the icon of the guild of the user
+			# Make sure to use yield so we wait till the icon is fetched
+			var guild_icon_bytes = yield(bot.get_guild_icon(message.guild_id, 128), "completed")
+			bot.send(message, "The Guild Icon", {
+				"files": [
+					{
+						"name": "guild_icon.png",
+						"media_type": "image/png",
+						"data": guild_icon_bytes
+					}
+				]
+			})
 
-			# Send a message and wait for the response
-			var msg = yield(bot.reply(message, "Ping.."), "completed")
 
-			# Get the latency of the bot
-			var latency = str(OS.get_ticks_msec() - starttime)
+			# Show the avatar and guild icon in the Godot game
 
-			# Edit the sent message with the latency
-			bot.edit(msg, "Pong! Latency is " + latency + "ms.")
+			# First we need to convert the raw png bytes to an Image then an ImageTexture
+			# For this we use the Helpers.to_png_image() and Helpers.to_image_texture()
 
-		"say":
-			# The say command will repeat whatever the user typed
+			var avatar_texture = Helpers.to_image_texture(Helpers.to_png_image(avatar_bytes))
+			$Avatar.texture = avatar_texture
 
-			# We get the arguments joined using a whitespace characters
-			print(args)
-			var to_say = PoolStringArray(args).join(" ")
-
-			bot.reply(message, "You said \"" + to_say + "\"")
-
-	pass
+			var guild_icon_texture = Helpers.to_image_texture(Helpers.to_png_image(guild_icon_bytes))
+			$GuildIcon.texture = guild_icon_texture

@@ -3,11 +3,20 @@ Discord.gd Examples
 
 
 ### A Godot project containing various examples using the Discord.gd Plugin.
-
-### Discord.gd Plugin - [Github](https://github.com/3ddelano/discord.gd)
+----
+### Get the plugin from:
+- #### [Godot Asset Library](https://godotengine.org/asset-library/asset/1010)
+- #### [Github - Latest](https://github.com/3ddelano/discord.gd)
 
 <br>
 <img alt="Godot3" src="https://img.shields.io/badge/-Godot 3.x-478CBF?style=for-the-badge&logo=godotengine&logoWidth=20&logoColor=white" />
+
+
+# How to run an example?
+1. Open the .tscn scene file of the example eg.`sending_files.tscn`
+2. Click on the script associated with the `Main` node
+3. Make sure to enter your valid bot token where specified in the script
+4. Press F6 or click the button to the right of the Stop button in the top right of the Godot editor 
 
 Contributing
 -----------

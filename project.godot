@@ -9,10 +9,20 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Reference",
+"class": "BitField",
+"language": "GDScript",
+"path": "res://addons/discord_gd/classes/bit_field.gd"
+}, {
 "base": "HTTPRequest",
 "class": "DiscordBot",
 "language": "GDScript",
 "path": "res://addons/discord_gd/discord.gd"
+}, {
+"base": "Reference",
+"class": "DiscordInteraction",
+"language": "GDScript",
+"path": "res://addons/discord_gd/classes/discord_interaction.gd"
 }, {
 "base": "Reference",
 "class": "Embed",
@@ -35,16 +45,48 @@ _global_script_classes=[ {
 "path": "res://addons/discord_gd/classes/message.gd"
 }, {
 "base": "Reference",
+"class": "MessageActionRow",
+"language": "GDScript",
+"path": "res://addons/discord_gd/classes/message_action_row.gd"
+}, {
+"base": "Reference",
+"class": "MessageButton",
+"language": "GDScript",
+"path": "res://addons/discord_gd/classes/message_button.gd"
+}, {
+"base": "BitField",
+"class": "MessageFlags",
+"language": "GDScript",
+"path": "res://addons/discord_gd/classes/message_flags.gd"
+}, {
+"base": "Reference",
+"class": "PermissionOverwrites",
+"language": "GDScript",
+"path": "res://addons/discord_gd/classes/permission_overwrites.gd"
+}, {
+"base": "BitField",
+"class": "Permissions",
+"language": "GDScript",
+"path": "res://addons/discord_gd/classes/permissions.gd"
+}, {
+"base": "Reference",
 "class": "User",
 "language": "GDScript",
 "path": "res://addons/discord_gd/classes/user.gd"
 } ]
 _global_script_class_icons={
+"BitField": "",
 "DiscordBot": "",
+"DiscordInteraction": "",
 "Embed": "",
 "Guild": "",
 "Helpers": "",
 "Message": "",
+"MessageActionRow": "",
+"MessageButton": "",
+"MessageFlags": "",
+"PermissionOverwrites": "",
+"Permissions": "",
 "User": ""
 }
 

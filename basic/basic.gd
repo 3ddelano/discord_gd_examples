@@ -6,8 +6,10 @@ and responds with the same text.
 """
 
 func _ready():
+	print("Basic Bot")
 	var bot = $DiscordBot
 	bot.TOKEN = "YOUR_TOKEN_HERE"
+	assert(bot.TOKEN != "YOUR_TOKEN_HERE", "You need to set a valid TOKEN for the bot.")
 
 	# Connect the signals of DiscordBot to this script
 	bot.connect("bot_ready", self, "_on_DiscordBot_bot_ready")

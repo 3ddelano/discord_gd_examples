@@ -1,17 +1,14 @@
 extends Control
 
 """
-Bot which reponds only to messages
-with start with a certain prefix.
-The bot has a two commands: gd.ping and gd.say
+Bot which sends image files.
+The bot has a a single command: gd.file
 """
 
-# The prefix which all the received messages should start with,
-# in order for the bot to respond to them.
 var PREFIX = "gd."
 
 func _ready():
-	print("Basic Command Handler Bot")
+	print("Sending Files Bot")
 	var bot = $DiscordBot
 	bot.TOKEN = "YOUR_TOKEN_HERE"
 	assert(bot.TOKEN != "YOUR_TOKEN_HERE", "You need to set a valid TOKEN for the bot.")
@@ -48,25 +45,11 @@ func _on_DiscordBot_message_create(bot: DiscordBot, message: Message, channel: D
 	if not message.content.begins_with(PREFIX):
 		return
 
-	# Now we need to convert the rest of the message content
-	# into two parts:
-	# The first is a command name (cmd)
-	# The second is the command arguments (args)
-
-	# First we get the remaining string without the prefix
 	var raw_content = message.content.lstrip(PREFIX)
-
 	var tokens = generate_tokens(raw_content)
-
-	# Now we get the command name from the tokens, and convert it to lowercase
 	var cmd = tokens[0].to_lower()
-
 	tokens.remove(0) # Remove the command name from the tokens
-
-	# Now we get the Array of arguments for that command
 	var args = tokens
-
-	 # Note: We pass the bot, message and channel too
 	handle_command(bot, message, channel, cmd, args)
 
 
@@ -87,28 +70,40 @@ func generate_tokens(raw_content: String):
 
 func handle_command(bot: DiscordBot, message: Message, channel: Dictionary, cmd: String, args: Array):
 	match cmd:
-		"ping":
-			# The ping command will send the latency of the bot
-			# Example Usage: gd.ping
+		"file":
 
-			var starttime = OS.get_ticks_msec() # Get the current epoch
+			# Sending a local image file. Here we will use the icon.png
+			var file = File.new()
+			file.open("res://icon.png", File.READ)
 
-			# Send a message and wait for the response
-			var msg = yield(bot.reply(message, "Ping.."), "completed")
+			# Next we need to get the raw bytes of the file as a PoolByteArray
+			var bytes = file.get_buffer(file.get_len())
 
-			# Get the latency of the bot
-			var latency = str(OS.get_ticks_msec() - starttime)
+			# Now we send the file
+			bot.send(message, {
+				"files": [
+					{
+						"name": "icon.png", # Name of the file with extension
+						"media_type": "image/png", # The MIME type of the file
+						"data": bytes # The raw bytes of the file
+					}
+				]
+			})
 
-			# Edit the sent message with the latency
-			bot.edit(msg, "Pong! Latency is " + latency + "ms.")
+			# Sending a screenshot of the game
 
-		"say":
-			# The say command will repeat whatever the user typed
+			# First we get the screenshot of the viewport
+			var image = get_viewport().get_texture().get_data()
+			image.flip_y() # Flip on Y-Axis
+			var bytes2 = image.save_png_to_buffer() # Convert the image to raw png bytes
 
-			# We get the arguments joined using a whitespace characters
-			print(args)
-			var to_say = PoolStringArray(args).join(" ")
-
-			bot.reply(message, "You said \"" + to_say + "\"")
-
-	pass
+			# Send the image
+			bot.send(message, "Screenshot of the game", {
+				"files": [
+					{
+						"name": "screenshot.png",
+						"media_type": "image/png",
+						"data": bytes2
+					}
+				]
+			})
